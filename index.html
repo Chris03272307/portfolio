@@ -68,6 +68,28 @@
             width: 100%;
             height: 100%;
             z-index: 0;
+            overflow: hidden;
+            background: radial-gradient(ellipse at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                rgba(0, 255, 136, 0.08) 0%, 
+                rgba(0, 204, 255, 0.05) 25%, 
+                transparent 50%);
+            transition: background 0.3s;
+        }
+
+        /* Grid that follows mouse */
+        .grid-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            transform: perspective(500px) rotateX(60deg) scale(2);
+            transform-origin: var(--mouse-x, 50%) var(--mouse-y, 50%);
+            transition: transform 0.1s ease-out;
         }
 
         .particles {
@@ -81,19 +103,37 @@
 
         .particle {
             position: absolute;
-            width: 2px;
-            height: 2px;
+            width: 4px;
+            height: 4px;
             background: var(--primary);
             border-radius: 50%;
-            opacity: 0.5;
-            animation: float 15s infinite;
+            opacity: 0.6;
+            transition: transform 0.3s ease-out;
+            box-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
-            10% { opacity: 0.8; }
-            90% { opacity: 0.8; }
-            100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
+        .particle.follow {
+            background: var(--secondary);
+            box-shadow: 0 0 10px var(--secondary), 0 0 20px var(--secondary);
+        }
+
+        /* Mouse trail */
+        .trail {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.5;
+            transform: translate(-50%, -50%);
+            animation: trail-fade 1s forwards;
+        }
+
+        @keyframes trail-fade {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
         }
 
         /* Gradient Orbs */
@@ -722,6 +762,7 @@
 
     <!-- Background Effects -->
     <div class="bg-canvas">
+        <div class="grid-layer" id="gridLayer"></div>
         <div class="particles" id="particles"></div>
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
@@ -894,25 +935,69 @@
             cursorDot.style.opacity = '1';
         });
 
-        // Mouse-follow for orbs
+        // Mouse-follow for orbs and background
         document.addEventListener('mousemove', (e) => {
             const x = e.clientX / window.innerWidth;
             const y = e.clientY / window.innerHeight;
-            document.documentElement.style.setProperty('--mouse-x', x);
-            document.documentElement.style.setProperty('--mouse-y', y);
+            document.documentElement.style.setProperty('--mouse-x', x * 100);
+            document.documentElement.style.setProperty('--mouse-y', y * 100);
+            
+            // Update grid perspective
+            const gridLayer = document.getElementById('gridLayer');
+            if (gridLayer) {
+                gridLayer.style.transformOrigin = `${x * 100}% ${y * 100}%`;
+            }
         });
 
-        // Generate particles
+        // Generate interactive particles that follow mouse
         const particlesContainer = document.getElementById('particles');
-        for(let i = 0; i < 50; i++) {
+        const particleCount = 30;
+        
+        for(let i = 0; i < particleCount; i++) {
             const particle = document.createElement('div');
             particle.className = 'particle';
             particle.style.left = Math.random() * 100 + '%';
             particle.style.top = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 15 + 's';
-            particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+            particle.style.width = (Math.random() * 4 + 2) + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.transition = 'transform 0.3s ease-out, background 0.3s';
+            
+            // Add mouse follow to some particles
+            if (i % 3 === 0) {
+                particle.classList.add('follow');
+            }
+            
             particlesContainer.appendChild(particle);
         }
+
+        // Interactive particles follow mouse
+        document.addEventListener('mousemove', (e) => {
+            const particles = document.querySelectorAll('.particle.follow');
+            particles.forEach((p, i) => {
+                const delay = i * 0.02;
+                setTimeout(() => {
+                    p.style.transform = `translate(${e.clientX - p.offsetLeft - 10}px, ${e.clientY - p.offsetTop - 10}px)`;
+                }, delay * 100);
+            });
+        });
+
+        // Mouse trail effect
+        let trailTimeout;
+        document.addEventListener('mousemove', (e) => {
+            if (trailTimeout) return;
+            trailTimeout = true;
+            
+            const trail = document.createElement('div');
+            trail.className = 'trail';
+            trail.style.left = e.clientX + 'px';
+            trail.style.top = e.clientY + 'px';
+            document.body.appendChild(trail);
+            
+            setTimeout(() => {
+                trail.remove();
+                trailTimeout = false;
+            }, 1000);
+        });
 
         // Typing effect
         const phrases = [
