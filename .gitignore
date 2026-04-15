@@ -1,6 +1,7 @@
 # Word document (if you don't want to upload)
 *.docx
 *.doc
+*.zip
 
 # OS files
 .DS_Store
