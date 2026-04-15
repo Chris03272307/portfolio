@@ -60,6 +60,41 @@
             transform: translate(-50%, -50%);
         }
 
+        /* Floating Notes Button */
+        .floating-notes-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #000;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+            transition: all 0.3s;
+            animation: floatBtn 3s ease-in-out infinite;
+        }
+
+        @keyframes floatBtn {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating-notes-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 255, 136, 0.4);
+        }
+
+        .notes-icon {
+            font-size: 1.2rem;
+        }
+
         /* Animated Background */
         .bg-canvas {
             position: fixed;
@@ -707,6 +742,16 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+            .floating-notes-btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 20px;
+            }
+
+            .notes-text {
+                display: none;
+            }
+
             nav {
                 padding: 20px;
             }
@@ -801,6 +846,12 @@
 
     <div class="scanlines"></div>
 
+    <!-- Floating Notes Button -->
+    <a href="notes.html" class="floating-notes-btn">
+        <span class="notes-icon">📝</span>
+        <span class="notes-text">学习笔记</span>
+    </a>
+
     <!-- Navigation -->
     <nav>
         <div class="logo"><span>&lt;</span>Chris<span>/&gt;</span></div>
@@ -834,6 +885,7 @@
             </div>
             <div class="cta-group">
                 <a href="#projects" class="btn btn-primary">查看项目 →</a>
+                <a href="notes.html" class="btn btn-secondary">📝 学习笔记</a>
                 <a href="#contact" class="btn btn-secondary">联系我</a>
             </div>
         </div>

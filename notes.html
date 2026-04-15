@@ -419,6 +419,32 @@
             font-size: 0.85rem;
         }
 
+        /* Back to Home Button */
+        .back-home-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 15px 25px;
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .back-home-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateX(-5px);
+        }
+
         .empty-state {
             text-align: center;
             padding: 80px 20px;
@@ -487,6 +513,11 @@
             <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
+
+    <!-- Back to Home Button -->
+    <a href="index.html" class="back-home-btn">
+        <span>←</span> 返回首页
+    </a>
 
     <footer>
         <p>© 2026 Chris · <a href="https://github.com/Chris03272307">GitHub</a></p>
